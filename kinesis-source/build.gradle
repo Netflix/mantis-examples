@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+repositories {
+  mavenCentral()
+    // TODO: This repo should not need to be here, is shadowing breaking in mql-jvm??
+  maven { url "https://clojars.org/repo" }
+}
+
+dependencies {
+    compile "io.mantisrx:mantis-runtime:1.+"
+    compile 'io.mantisrx:mql-jvm:3.+'
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.+"
+    compile "com.amazonaws:amazon-kinesis-client:1.+"
+    compile "com.amazonaws:amazon-kinesis-producer:0+"
+
+    implementation 'io.vavr:vavr:0.10.0'
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.mockito:mockito-all:1.9.5"
+}
+
+task kinesis(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'com.netflix.mantis.source.job.kinesis.core.KinesisSourceJob'
+  args 'appArg1'
+}

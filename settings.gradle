@@ -18,6 +18,8 @@ rootProject.name = 'mantis-examples'
 
 [
     'sine-function',
+    'kinesis-source',
+    'mql-lite'
 ].each {
     include "${it}"
     project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')
