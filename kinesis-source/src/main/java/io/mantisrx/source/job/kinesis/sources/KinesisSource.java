@@ -19,6 +19,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Serves as the source component of a Mantis job which can consume from a Kinesis
+ * stream.
+ */
 public class KinesisSource implements Source<KinesisAckable> {
 
     private static Logger logger = Logger.getLogger(KinesisSource.class);
@@ -45,7 +49,8 @@ public class KinesisSource implements Source<KinesisAckable> {
      * @param pollingInterval The interval on which the source should drain the queue into an Observable for the job
      *                        pipeline.
      */
-    public KinesisSource(String applicationName, String streamName, String workerId, Integer queueLength, Integer pollingInterval, Integer checkpointInterval) {
+    public KinesisSource(String applicationName, String streamName, String workerId, Integer queueLength,
+        Integer pollingInterval, Integer checkpointInterval) {
         this.applicationName = applicationName;
         this.streamName = streamName;
         this.workerId = workerId;
@@ -66,6 +71,12 @@ public class KinesisSource implements Source<KinesisAckable> {
                 .build();
     }
 
+    /**
+     * Method is intended to be called by the Mantis runtime with both parameters being provided.
+     * @param context The Mantis context for this execution.
+     * @param index the Mantis index for this execution.
+     * @return An Observable of the source data from the specific Kinesis stream.
+     */
     public Observable<Observable<KinesisAckable>> call(Context context, Index index) {
         // Run the Kinesis worker in a separate thread.
         Observable.just("worker").subscribeOn(Schedulers.newThread()).forEach(x -> {

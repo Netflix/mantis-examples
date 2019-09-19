@@ -21,6 +21,9 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Implements our IRecordProcessor for consuming data from Kinesis.
+ */
 public class KinesisRecordProcessor implements IRecordProcessor {
 
   private static Logger logger = LoggerFactory.getLogger(KinesisRecordProcessor.class);
@@ -28,7 +31,8 @@ public class KinesisRecordProcessor implements IRecordProcessor {
   private final Queue<KinesisAckable> queue;
   private final PublishSubject<String> acks;
   private final Charset charset = Charset.forName("UTF-8");
-  private final AtomicReference<IRecordProcessorCheckpointer> checkpointer = new AtomicReference<IRecordProcessorCheckpointer>(null);
+  private final AtomicReference<IRecordProcessorCheckpointer> checkpointer =
+    new AtomicReference<IRecordProcessorCheckpointer>(null);
 
   public KinesisRecordProcessor(Queue<KinesisAckable> queue, Integer ackInterval) {
     super();
@@ -37,6 +41,9 @@ public class KinesisRecordProcessor implements IRecordProcessor {
     this.ackInterval = ackInterval;
   }
 
+  /**
+   * Initialize will setup a checkpoint on an interval specified by the user.
+   */
   public void initialize(InitializationInput initializationInput) {
 
       Observable.interval(this.ackInterval, TimeUnit.SECONDS)
@@ -69,13 +76,18 @@ public class KinesisRecordProcessor implements IRecordProcessor {
       }
 
       Iterator<Record> recordIterator = processRecordsInput.getRecords().iterator();
-      while(recordIterator.hasNext()) {
+      while (recordIterator.hasNext()) {
           Record rec = recordIterator.next();
-          KinesisAckable datum = new KinesisAckable(new String(rec.getData().array(), charset), rec.getSequenceNumber(), this.acks);
+          KinesisAckable datum =
+            new KinesisAckable(new String(rec.getData().array(), charset), rec.getSequenceNumber(), this.acks);
           queue.offer(datum);
       }
   }
 
+  /**
+   * Can be used to implement any sort of tear down logic for the record
+   * processor. May be useful for providing final checkpointing.
+   */
   public void shutdown(ShutdownInput shutdownInput) {
       logger.info("Initiating shutdown procedure: " + shutdownInput.getShutdownReason());
   }

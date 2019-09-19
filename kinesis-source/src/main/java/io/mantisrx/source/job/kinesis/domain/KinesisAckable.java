@@ -4,8 +4,12 @@ import rx.subjects.PublishSubject;
 
 import java.util.Optional;
 
+/**
+ * Domain object allowing us to wrap a Kinesis payload
+ * in something we can acknowledge has passed processing.
+ */
 public class KinesisAckable {
-    public final String payload;
+    private final String payload;
     private final String sequenceNumber;
     private final Optional<PublishSubject<String>> acks;
 
@@ -25,6 +29,9 @@ public class KinesisAckable {
         return payload;
     }
 
+    /**
+     * Acknowledges that this data has been processed and is eligible to be checkpointed.
+     */
     public void ack() {
         this.acks.map(a -> {
             a.onNext(this.sequenceNumber);

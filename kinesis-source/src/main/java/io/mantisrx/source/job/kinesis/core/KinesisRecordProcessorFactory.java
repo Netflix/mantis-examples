@@ -6,6 +6,9 @@ import io.mantisrx.source.job.kinesis.domain.KinesisAckable;
 
 import java.util.Queue;
 
+/**
+ * Factory for record processors.
+ */
 public class KinesisRecordProcessorFactory implements IRecordProcessorFactory {
 
   private final Queue<KinesisAckable> queue;
@@ -16,6 +19,10 @@ public class KinesisRecordProcessorFactory implements IRecordProcessorFactory {
     this.checkpointInterval = checkpointInterval;
   }
 
+  /**
+   * Constructs and returns an instance of KinesisRecordProcessor using
+   * the specified queue and checkpoint interval when this factory was constructed.
+   */
   public IRecordProcessor createProcessor() {
     return new KinesisRecordProcessor(this.queue, this.checkpointInterval);
   }

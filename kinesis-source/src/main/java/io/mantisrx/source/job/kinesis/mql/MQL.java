@@ -51,7 +51,8 @@ public class MQL {
     private static IFn queryToHavingPred = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->having-pred");
     private static IFn queryToOrderBy = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->orderby");
     private static IFn queryToLimit = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->limit");
-    private static IFn queryToExtrapolationFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->extrapolator");
+    private static IFn queryToExtrapolationFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.core",
+        "query->extrapolator");
     private static IFn queryToAggregateFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "agg-query->projection");
     private static IFn queryToWindow = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->window");
 
@@ -64,6 +65,12 @@ public class MQL {
     private final boolean threadingEnabled;
     private final Option<String> sourceJobName;
 
+    /**
+     * Initialization method which can be optionally called.
+     * The objective with this method was to allow certain clients (api-prod) to reference this class
+     * earlier in their lifecycle to prevent Clojure from loading later in the runtime when the application
+     * is serving clients.
+     */
     public static void init() {
         logger.info("Initializing MQL runtime.");
     }
@@ -98,13 +105,34 @@ public class MQL {
         this.sourceJobName = Option.of(sourceJobName);
     }
 
+    /**
+     * Static factory method for this class.
+     * @param query The MQL query.
+     * @return This class initialized with the query and no threading.
+     */
     public static MQL parse(String query) {
         return new MQL(query, false);
     }
 
-    public static MQL parse(String query, boolean threadingEnabled) { return new MQL(query, threadingEnabled); }
+    /**
+     * Static factory method for this class.
+     * @param query The MQL query.
+     * @param threadingEnabled Enables experimental threading mode.
+     * @return This class initialized with the query.
+     */
+    public static MQL parse(String query, boolean threadingEnabled) {
+      return new MQL(query, threadingEnabled);
+    }
 
-    public static MQL parse(String query, String sourceName) { return new MQL(query, sourceName ); }
+    /**
+     * Static factory method for this class.
+     * @param query The MQL query.
+     * @param sourceName The name of the source allowing data to be tagged as such.
+     * @return This class initialized with the query.
+     */
+    public static MQL parse(String query, String sourceName) {
+      return new MQL(query, sourceName);
+    }
 
     //
     // Source Job Integration
@@ -133,7 +161,7 @@ public class MQL {
             throw new IllegalArgumentException(error);
         }
          */
-        return (Query)cljMakeQuery.invoke(subscriptionId, query.trim());
+        return (Query) cljMakeQuery.invoke(subscriptionId, query.trim());
     }
 
     @SuppressWarnings("unchecked")
@@ -164,50 +192,90 @@ public class MQL {
         IFn superSetProjector = superSetProjectorCache.computeIfAbsent(new HashSet<Query>(queries), (qs) -> {
             return computeSuperSetProjector(qs);
         });
-        return (Map<String, Object>)superSetProjector.invoke(datum);
+        return (Map<String, Object>) superSetProjector.invoke(datum);
     }
 
     //
     // Partial Query Functionality
     //
 
+    /**
+     * Converts an MQL query into a Func1 fetching the results to group by from an event.
+     * @param query The MQL query.
+     * @return A Func1 for use in RxJava's groupby.
+     */
     public static Func1<Map<String, Object>, Object> getGroupByFn(String query) {
-        IFn func = (IFn)queryToGroupByFn.invoke(query);
+        IFn func = (IFn) queryToGroupByFn.invoke(query);
         return func::invoke;
     }
 
+    /**
+     * Converts an MQL query into a Func1 predicate implementing the query's HAVING clause.
+     * @param query The MQL query.
+     * @return A Func1 for use in RxJava's filter.
+     */
     @SuppressWarnings("unchecked")
     public static Func1<Map<String, Object>, Boolean> getHavingPredicate(String query) {
-        IFn func = (IFn)queryToHavingPred.invoke(query);
-        return (datum) -> (Boolean)func.invoke(datum);
+        IFn func = (IFn) queryToHavingPred.invoke(query);
+        return (datum) -> (Boolean) func.invoke(datum);
     }
 
+    /**
+     * Converts an MQL query into a Func1 performing an aggregate function.
+     * @param query The MQL query.
+     * @return A Func1 that can be mapped over lists of events.
+     */
     @SuppressWarnings("unchecked")
     public static Func1<Observable<Map<String, Object>>, Observable<Map<String, Object>>> getAggregateFn(String query) {
-        IFn func = (IFn)queryToAggregateFn.invoke(query);
-        return (obs) -> (Observable<Map<String, Object>>)func.invoke(obs);
+        IFn func = (IFn) queryToAggregateFn.invoke(query);
+        return (obs) -> (Observable<Map<String, Object>>) func.invoke(obs);
     }
 
+    /**
+     * Converts an MQL query into a Func1 performing extrapolation against a sample.
+     * The objective here is to invert aggregate effects caused by sampling. Note these are approximations.
+     * @param query The MQL query.
+     * @return A Func1 to be mapped over the stream.
+     */
     @SuppressWarnings("unchecked")
     public static Func1<Map<String, Object>, Map<String, Object>> getExtrapolationFn(String query) {
-        IFn func = (IFn)queryToExtrapolationFn.invoke(query);
-        return (datum) -> (Map<String, Object>)func.invoke(datum);
+        IFn func = (IFn) queryToExtrapolationFn.invoke(query);
+        return (datum) -> (Map<String, Object>) func.invoke(datum);
     }
 
+    /**
+     * Converts an MQL query into a Func1 which will sort the provided Observable as specified in the query.
+     * The provided Observable must be discrete (cold) otherwise this will block until the Observable completes.
+     * Window / buffer results satisfy the above condition.
+     * @param query The MQL query.
+     * @return A Func1 which can be mapped over discrete observables.
+     */
     @SuppressWarnings("unchecked")
     public static Func1<Observable<Map<String, Object>>, Observable<Map<String, Object>>> getOrderBy(String query) {
-        IFn func = (IFn)queryToOrderBy.invoke(query);
-        return obs -> (Observable<Map<String, Object>>)func.invoke(obs);
+        IFn func = (IFn) queryToOrderBy.invoke(query);
+        return obs -> (Observable<Map<String, Object>>) func.invoke(obs);
     }
 
 
+    /**
+     * Fetches the sliding window parameters from an MQL query. Result is always a list of length 2.
+     * If both values are equal then the window is tumbling.
+     * @param query The MQL query.
+     * @return A list of sliding window parameters in seconds specified by the query.
+     */
     public static List<Long> getWindow(String query) {
-        clojure.lang.PersistentVector result = (clojure.lang.PersistentVector)queryToWindow.invoke(query);
-        Long window = (Long)result.nth(0);
-        Long shift = (Long)result.nth(1);
+        io.mantisrx.mql.shaded.clojure.lang.PersistentVector result =
+          (io.mantisrx.mql.shaded.clojure.lang.PersistentVector) queryToWindow.invoke(query);
+        Long window = (Long) result.nth(0);
+        Long shift = (Long) result.nth(1);
         return Arrays.asList(window, shift);
     }
 
+    /**
+     * Fetches the limit value from an MQL query.
+     * @param query The MQL query.
+     * @return The limit value as a number of events.
+     */
     public static Long getLimit(String query) {
         return (Long) queryToLimit.invoke(query);
     }
@@ -242,12 +310,8 @@ public class MQL {
      * @return A valid MQL query string assuming the input was valid.
      */
     public static String transformLegacyQuery(String criterion) {
-        return criterion.toLowerCase().equals("true") ? "select * where true" :
-                criterion.toLowerCase().equals("false") ? "select * where false" :
-                        criterion;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(MQL.makeQuery("abc", "select * from stream where true"));
+        return criterion.toLowerCase().equals("true") ? "select * where true"
+          : criterion.toLowerCase().equals("false") ? "select * where false"
+          : criterion;
     }
 }

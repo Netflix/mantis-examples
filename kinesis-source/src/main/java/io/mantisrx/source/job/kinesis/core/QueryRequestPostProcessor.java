@@ -2,18 +2,19 @@ package io.mantisrx.source.job.kinesis.core;
 
 import java.util.List;
 import java.util.Map;
-
 import io.mantisrx.runtime.Context;
 import io.mantisrx.source.job.kinesis.Constants;
-import io.mantisrx.source.job.kinesis.mql.MQLQueryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.functions.Func2;
 
 
-public class QueryRequestPostProcessor  implements Func2<Map<String, List<String>>, Context,Void> {
+/**
+ * Handles any post-processing tasks for a query after all clients have disconnected.
+ */
+public class QueryRequestPostProcessor  implements Func2<Map<String, List<String>>, Context, Void> {
 
-    private static final Logger logger = LoggerFactory.getLogger(QueryRequestPostProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(QueryRequestPostProcessor.class);
 
     public QueryRequestPostProcessor() {
 
@@ -26,7 +27,7 @@ public class QueryRequestPostProcessor  implements Func2<Map<String, List<String
 
         if (queryParams != null) {
 
-            if(queryParams.containsKey(Constants.SUBSCRIPTION_ID) && queryParams.containsKey(Constants.CRITERION)) {
+            if (queryParams.containsKey(Constants.SUBSCRIPTION_ID) && queryParams.containsKey(Constants.CRITERION)) {
 
                 final String subId = queryParams.get(Constants.SUBSCRIPTION_ID).get(0);
 
@@ -34,15 +35,15 @@ public class QueryRequestPostProcessor  implements Func2<Map<String, List<String
 
                 final String clientId = queryParams.get("clientId").get(0);
 
-                if(subId != null && query != null) {
+                if (subId != null && query != null) {
 
                     try {
-                        if(clientId != null && !clientId.isEmpty()) {
+                        if (clientId != null && !clientId.isEmpty()) {
                             deregisterQuery(clientId + "_" + subId);
                         } else {
                             deregisterQuery(subId);
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         logger.error("Error propagating unsubscription notification " + e.getMessage());
                     }
                     //propagateSubscriptionCriterion("localhost",8080,subId, query);

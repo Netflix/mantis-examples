@@ -15,13 +15,22 @@ import rx.Observable;
 import rx.functions.Func2;
 
 
+/**
+ * A Mantis Sink for TaggedData which is the primary domain object for this job.
+ */
 public class TaggedDataSourceSink implements Sink<TaggedData> {
 
-    Func2<Map<String, List<String>>, Context,Void> preProcessor = new NoOpProcessor();
-    Func2<Map<String,List<String>>,Context,Void> postProcessor = new NoOpProcessor();
-    ObjectMapper mapper = new ObjectMapper();
+    /** preprocessor for connections to this sink. */
+    private Func2<Map<String, List<String>>, Context, Void> preProcessor = new NoOpProcessor();
+    /** postprocessor for connections to this sink. */
+    private Func2<Map<String, List<String>>, Context, Void> postProcessor = new NoOpProcessor();
 
-    static class NoOpProcessor implements Func2<Map<String,List<String>>,Context,Void> {
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * A no op function which serves as the default pre/post processor.
+     */
+    static class NoOpProcessor implements Func2<Map<String, List<String>>, Context, Void> {
         @Override
         public Void call(Map<String, List<String>> t1, Context t2) {
             return null;
@@ -31,8 +40,8 @@ public class TaggedDataSourceSink implements Sink<TaggedData> {
     public TaggedDataSourceSink() {
     }
 
-    public TaggedDataSourceSink(Func2<Map<String,List<String>>,Context,Void> preProcessor,
-                                Func2<Map<String,List<String>>,Context,Void> postProcessor) {
+    public TaggedDataSourceSink(Func2<Map<String, List<String>>, Context, Void> preProcessor,
+                                Func2<Map<String, List<String>>, Context, Void> postProcessor) {
         this.postProcessor = postProcessor;
         this.preProcessor = preProcessor;
     }
@@ -41,7 +50,7 @@ public class TaggedDataSourceSink implements Sink<TaggedData> {
     public void call(Context context, PortRequest portRequest,
                      Observable<TaggedData> observable) {
         observable = observable
-                .filter(( t1) -> {
+                .filter((t1) -> {
                     return !t1.getPayload().isEmpty();
                 });
         ServerSentEventsSink<TaggedData> sink = new ServerSentEventsSink.Builder<TaggedData>()
@@ -54,7 +63,7 @@ public class TaggedDataSourceSink implements Sink<TaggedData> {
                         return "{\"error\":" + e.getMessage() + "}";
                     }
                 })
-                .withPredicate(new Predicate<TaggedData>("description",new TaggedEventFilter()))
+                .withPredicate(new Predicate<TaggedData>("description", new TaggedEventFilter()))
                 .withRequestPreprocessor(preProcessor)
                 .withRequestPostprocessor(postProcessor)
                 .build();

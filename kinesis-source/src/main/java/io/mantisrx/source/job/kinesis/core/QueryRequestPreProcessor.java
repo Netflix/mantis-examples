@@ -10,10 +10,14 @@ import org.slf4j.LoggerFactory;
 import rx.functions.Func2;
 
 
-public class QueryRequestPreProcessor  implements Func2<Map<String, List<String>>, Context,Void> {
+/**
+ * Handles any pre-processing tasks for a query after all clients have disconnected.
+ */
+public class QueryRequestPreProcessor  implements Func2<Map<String, List<String>>, Context, Void> {
 
-    private static final Logger logger = LoggerFactory.getLogger(QueryRequestPreProcessor.class);
-    public QueryRequestPreProcessor() { }
+    private final Logger logger = LoggerFactory.getLogger(QueryRequestPreProcessor.class);
+    public QueryRequestPreProcessor() {
+    }
 
     @Override
     public Void call(Map<String, List<String>> queryParams, Context context) {
@@ -22,22 +26,22 @@ public class QueryRequestPreProcessor  implements Func2<Map<String, List<String>
 
         if (queryParams != null) {
 
-            if(queryParams.containsKey(Constants.SUBSCRIPTION_ID) && queryParams.containsKey(Constants.CRITERION)) {
+            if (queryParams.containsKey(Constants.SUBSCRIPTION_ID) && queryParams.containsKey(Constants.CRITERION)) {
 
                 final String subId = queryParams.get(Constants.SUBSCRIPTION_ID).get(0);
                 final String query = queryParams.get(Constants.CRITERION).get(0);
                 final String clientId = queryParams.get(Constants.CLIENT_ID).get(0);
 
-                if(subId != null && query != null) {
+                if (subId != null && query != null) {
 
                     try {
                         logger.info("Registering query ");
-                        if(clientId != null && !clientId.isEmpty()) {
+                        if (clientId != null && !clientId.isEmpty()) {
                             registerQuery(clientId + "_" + subId, query);
                         } else {
                             registerQuery(subId, query);
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         logger.error("Error registering query " + e.getMessage());
                     }
                     //propagateSubscriptionCriterion("localhost",8080,subId, query);

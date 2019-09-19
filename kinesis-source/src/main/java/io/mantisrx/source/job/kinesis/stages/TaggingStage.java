@@ -16,33 +16,58 @@ import rx.Observable;
 import java.nio.charset.Charset;
 import java.util.*;
 
+/**
+ * Primary logic stage for a source job, checks active queries against incoming data
+ * and tags it with the correct.
+ */
 public class TaggingStage implements ScalarComputation<KinesisAckable, TaggedData> {
 
+    /** JSON property name for source job. */
     public static final String MANTIS_META_SOURCE_NAME = "mantis.meta.sourceName";
+    /** JSON property name for time stamp. */
     public static final String MANTIS_META_SOURCE_TIMESTAMP = "mantis.meta.timestamp";
+    /** JSON property for Mantis metadata. */
     public static final String MANTIS_META = "mantis.meta";
 
-    private static final Logger logger = LoggerFactory.getLogger(TaggingStage.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private final Logger logger = LoggerFactory.getLogger(TaggingStage.class);
+
     private final String jobName;
 
     public TaggingStage(String jobName) {
         this.jobName = jobName;
     }
 
-    // no op
+    /**
+     * No-op preprocessor. Implements identity function for events.
+     * @param rawData An event to be pre-processed.
+     * @return The provided rawData event unchanged.
+     */
     protected Map<String, Object> preProcess(Map<String, Object> rawData) {
         return rawData;
     }
 
-    protected  Map<String,Object> applyPreMapping(final Context context, final Map<String,Object> rawData) {
+    /**
+     * No-op pre-mapper. Implements identity function for events.
+     * @param context The mantis context for this execution.
+     * @param rawData An event to be pre-mapped.
+     * @return The provided event, unchanged.
+     */
+    protected  Map<String, Object> applyPreMapping(final Context context, final Map<String, Object> rawData) {
         return rawData;
     }
 
+    /**
+     * Deserializes data and acknowledges such that the source can check point.
+     * @param context The Mantis context for this execution.
+     * @param ackable A KinesisAckable which will be deserialized and then acked so as to be checkpointable.
+     */
     protected Map<String, Object> processAndAck(final Context context, KinesisAckable ackable) {
         Map<String, Object> eventData = new HashMap<>();
         try {
-            eventData = objectMapper.readValue(ackable.getPayload().getBytes(Charset.forName("UTF-8")), new TypeReference<Map<String, Object>>() {});
+            eventData = OBJECT_MAPPER.readValue(ackable.getPayload().getBytes(Charset.forName("UTF-8")),
+                new TypeReference<Map<String, Object>>() { });
         } catch (JsonParseException jpe) {
             logger.error("Error parsing payload {}", jpe);
         } catch (Exception e) {
@@ -58,6 +83,12 @@ public class TaggingStage implements ScalarComputation<KinesisAckable, TaggedDat
         return event.containsKey(MANTIS_META);
     }
 
+    /**
+     * Tags an event with any matching queries.
+     * @param d An event to be tagged.
+     * @param context The Mantis context provided by the runtime.
+     * @return A list of events tagged with subscription ids.
+     */
     protected List<TaggedData> tagData(Map<String, Object> d, Context context) {
         List<TaggedData> taggedDataList = new ArrayList<>();
         boolean metaEvent = isMetaEvent(d);
@@ -79,8 +110,15 @@ public class TaggingStage implements ScalarComputation<KinesisAckable, TaggedDat
             }
         }
         return taggedDataList;
-    };
+    }
 
+    /**
+     * Intended to be called by the Mantis runtime which will provide context and data.
+     *
+     * @param context The Mantis context.
+     * @param data An Observable of raw data to be tagged with matching queries.
+     * @return An Observable of TaggedData for the sink to hand out to clients.
+     */
     public Observable<TaggedData> call(Context context, Observable<KinesisAckable> data) {
         return data
                 .map(datum -> preProcess(processAndAck(context, datum)))
