@@ -19,6 +19,7 @@ package com.netflix.mantis.examples;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mantisrx.common.utils.JsonUtility;
 import io.mantisrx.common.MantisServerSentEvent;
 import io.mantisrx.common.codec.Codecs;
@@ -31,11 +32,10 @@ import rx.Observable;
 
 /**
  * Performs MQL processing as a Mantis stage.
- * TODO: Allow the user to pass in a query.
- * TODO: Serialize output.
  */
 public class MQLStage implements ScalarComputation<MantisServerSentEvent, String> {
     private static Logger logger = LoggerFactory.getLogger(MQLLiteJob.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public void init(Context context) {
@@ -48,8 +48,18 @@ public class MQLStage implements ScalarComputation<MantisServerSentEvent, String
         mqlContext.put("stream", eventObs.map(MantisServerSentEvent::getEventAsString)
                 .map(JsonUtility::jsonToMap));
 
-        return io.mantisrx.mql.jvm.Core.evalMql("select * from stream where tick > 15 && tick < 30", mqlContext)
-                .map(Object::toString);
+        String query = context.getParameters().get("query", "select * from stream").toString();
+
+        return io.mantisrx.mql.jvm.Core.evalMql(query, mqlContext)
+                .map(event -> {
+                    try {
+                        return OBJECT_MAPPER.writeValueAsString(event);
+                    } catch (Exception ex) {
+                        logger.error("Error serializing output: {}", ex.getMessage());
+                        return "";
+                    }
+                })
+                .filter(event -> event != null && !event.toString().isEmpty());
     }
 
     /**

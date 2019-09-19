@@ -21,13 +21,17 @@ import io.mantisrx.runtime.Job;
 import io.mantisrx.runtime.MantisJob;
 import io.mantisrx.runtime.MantisJobProvider;
 import io.mantisrx.runtime.lifecycle.LifecycleNoOp;
+import io.mantisrx.runtime.parameter.type.StringParameter;
+import io.mantisrx.runtime.parameter.validator.Validators;
 import io.mantisrx.runtime.sink.Sinks;
 
 
 /**
  * This sample job demonstrates the use mantis java client to connect to a source job.
  * Source Jobs are job that connect to production servers directly and fetch streaming data
- * on behalf of client jobs
+ * on behalf of client jobs.
+ *
+ * TODO: Use something more Sophisticated than JobSource which can pass the query upstream to the sink.
  */
 public class MQLLiteJob extends MantisJobProvider<String> {
     @Override
@@ -40,6 +44,12 @@ public class MQLLiteJob extends MantisJobProvider<String> {
                 .stage(new MQLStage(), MQLStage.config())
             .sink(Sinks.eagerSubscribe(Sinks.sse((String data) -> data)))
                 .lifecycle(new LifecycleNoOp())
+                .parameterDefinition(new StringParameter()
+                .name("query")
+                .description("An MQL query to be performed on the data stream.")
+                .defaultValue("select * from stream")
+                .validator(Validators.notNullOrEmpty())
+                .build())
             .create();
     }
 }
