@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.samples;
+package com.netflix.mantis.examples.twittersample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,9 @@ import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 import com.mantisrx.common.utils.JsonUtility;
+import com.netflix.mantis.examples.twittersample.config.StageConfigs;
+import com.netflix.mantis.examples.twittersample.core.WordCountPair;
+import com.netflix.mantis.examples.twittersample.sources.TwitterSource;
 import io.mantisrx.runtime.Job;
 import io.mantisrx.runtime.MantisJob;
 import io.mantisrx.runtime.MantisJobProvider;
@@ -48,24 +51,24 @@ public class TwitterJob extends MantisJobProvider<String> {
                 .source(new TwitterSource())
                 // Simply echoes the tweet
                 .stage((context, dataO) -> dataO
-                        .map(JsonUtility::jsonToMap)
-                        // filter out english tweets
-                        .filter((eventMap) -> {
-                            if(eventMap.containsKey("lang") && eventMap.containsKey("text")) {
-                                String lang = (String)eventMap.get("lang");
-                                return "en".equalsIgnoreCase(lang);
-                            }
-                            return false;
-                        }).map((eventMap) -> (String)eventMap.get("text"))
-                        // tokenize the tweets into words
-                        .flatMap((text) -> Observable.from(tokenize(text)))
-                        // On a hopping window of 10 seconds
-                        .window(10, TimeUnit.SECONDS)
-                        .flatMap((wordCountPairObservable) -> wordCountPairObservable
-                                // count how many times a word appears
-                                .groupBy(WordCountPair::getWord)
-                                .flatMap((groupO) -> groupO.reduce(0, (cnt, wordCntPair) -> cnt + 1)
-                                        .map((cnt) -> new WordCountPair(groupO.getKey(), cnt))))
+                                .map(JsonUtility::jsonToMap)
+                                // filter out english tweets
+                                .filter((eventMap) -> {
+                                    if (eventMap.containsKey("lang") && eventMap.containsKey("text")) {
+                                        String lang = (String) eventMap.get("lang");
+                                        return "en".equalsIgnoreCase(lang);
+                                    }
+                                    return false;
+                                }).map((eventMap) -> (String) eventMap.get("text"))
+                                // tokenize the tweets into words
+                                .flatMap((text) -> Observable.from(tokenize(text)))
+                                // On a hopping window of 10 seconds
+                                .window(10, TimeUnit.SECONDS)
+                                .flatMap((wordCountPairObservable) -> wordCountPairObservable
+                                        // count how many times a word appears
+                                        .groupBy(WordCountPair::getWord)
+                                        .flatMap((groupO) -> groupO.reduce(0, (cnt, wordCntPair) -> cnt + 1)
+                                                .map((cnt) -> new WordCountPair(groupO.getKey(), cnt))))
                                 .map(WordCountPair::toString)
 
                         , StageConfigs.scalarToScalarConfig())
@@ -81,25 +84,23 @@ public class TwitterJob extends MantisJobProvider<String> {
     private List<WordCountPair> tokenize(String text) {
         StringTokenizer tokenizer = new StringTokenizer(text);
         List<WordCountPair> wordCountPairs = new ArrayList<>();
-        while(tokenizer.hasMoreTokens()) {
+        while (tokenizer.hasMoreTokens()) {
             String word = tokenizer.nextToken().replaceAll("\\s*", "").toLowerCase();
-            wordCountPairs.add(new WordCountPair(word,1));
+            wordCountPairs.add(new WordCountPair(word, 1));
         }
         return wordCountPairs;
     }
 
 
     public static void main(String[] args) {
-
-// TODO Please Set these variables to valid Strings before running the job
-
+        // TODO Please Set these variables to valid Strings before running the job
         String consumerKey = null;
         String consumerSecret = null;
         String token = null;
         String tokenSecret = null;
 
         LocalJobExecutorNetworked.execute(new TwitterJob().getJobInstance(),
-                new Parameter(TwitterSource.CONSUMER_KEY_PARAM,consumerKey),
+                new Parameter(TwitterSource.CONSUMER_KEY_PARAM, consumerKey),
                 new Parameter(TwitterSource.CONSUMER_SECRET_PARAM, consumerSecret),
                 new Parameter(TwitterSource.TOKEN_PARAM, token),
                 new Parameter(TwitterSource.TOKEN_SECRET_PARAM, tokenSecret)

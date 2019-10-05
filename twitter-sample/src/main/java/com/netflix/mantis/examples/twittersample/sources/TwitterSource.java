@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.samples;
+package com.netflix.mantis.examples.twittersample.sources;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.netflix.mantis.examples.twittersample.core.ObservableQueue;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
@@ -62,6 +63,7 @@ public class TwitterSource implements Source<String> {
 
     /**
      * Define parameters required by this source.
+     *
      * @return
      */
     @Override
@@ -74,35 +76,35 @@ public class TwitterSource implements Source<String> {
                 .description("twitter consumer key")
                 .validator(Validators.notNullOrEmpty())
                 .required()
-                .build())	;
+                .build());
 
         params.add(new StringParameter()
                 .name(CONSUMER_SECRET_PARAM)
                 .description("twitter consumer secret")
                 .validator(Validators.notNullOrEmpty())
                 .required()
-                .build())	;
+                .build());
 
         params.add(new StringParameter()
                 .name(TOKEN_PARAM)
                 .description("twitter token")
                 .validator(Validators.notNullOrEmpty())
                 .required()
-                .build())	;
+                .build());
 
         params.add(new StringParameter()
                 .name(TOKEN_SECRET_PARAM)
                 .description("twitter token secret")
                 .validator(Validators.notNullOrEmpty())
                 .required()
-                .build())	;
+                .build());
 
         params.add(new StringParameter()
                 .name(TERMS_PARAM)
                 .description("terms to follow")
                 .validator(Validators.notNullOrEmpty())
                 .defaultValue("Netflix,Dark")
-                .build())	;
+                .build());
 
         return params;
 
@@ -111,29 +113,28 @@ public class TwitterSource implements Source<String> {
     /**
      * Init method is called only once during initialization. It is the ideal place to perform one time
      * configuration actions.
+     *
      * @param context Provides access to Mantis system information like JobId, Job parameters etc
-     * @param index This provides access to the unique workerIndex assigned to this container. It also provides
-     *              the total number of workers of this job.
+     * @param index   This provides access to the unique workerIndex assigned to this container. It also provides
+     *                the total number of workers of this job.
      */
     @Override
     public void init(Context context, Index index) {
+        String consumerKey = (String) context.getParameters().get(CONSUMER_KEY_PARAM);
+        String consumerSecret = (String) context.getParameters().get(CONSUMER_SECRET_PARAM);
+        String token = (String) context.getParameters().get(TOKEN_PARAM);
+        String tokenSecret = (String) context.getParameters().get(TOKEN_SECRET_PARAM);
 
-        String consumerKey = (String)context.getParameters().get(CONSUMER_KEY_PARAM);
-        String consumerSecret = (String)context.getParameters().get(CONSUMER_SECRET_PARAM);
-        String token = (String)context.getParameters().get(TOKEN_PARAM);
-        String tokenSecret = (String)context.getParameters().get(TOKEN_SECRET_PARAM);
-
-        String terms = (String)context.getParameters().get(TERMS_PARAM);
+        String terms = (String) context.getParameters().get(TERMS_PARAM);
 
         Authentication auth = new OAuth1(consumerKey,
                 consumerSecret,
                 token,
                 tokenSecret);
 
-
         StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
 
-        String [] termArray = terms.split(",");
+        String[] termArray = terms.split(",");
 
         List<String> termsList = Arrays.asList(termArray);
 
@@ -148,7 +149,5 @@ public class TwitterSource implements Source<String> {
                 .build();
 
         client.connect();
-
     }
-
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.samples;
+package com.netflix.mantis.examples.twittersample.core;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,6 +32,7 @@ import rx.subjects.Subject;
 
 /**
  * An Observable that acts as a blocking queue. It is backed by a <code>Subject</code>
+ *
  * @param <T>
  */
 public class ObservableQueue<T> implements BlockingQueue<T>, Closeable {
@@ -57,6 +58,7 @@ public class ObservableQueue<T> implements BlockingQueue<T>, Closeable {
     public void close() throws IOException {
         subject.onCompleted();
     }
+
     @Override
     public T remove() {
         return noSuchElement();

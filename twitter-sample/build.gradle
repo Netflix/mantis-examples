@@ -6,7 +6,6 @@ configurations.all {
     }
 }
 
-
 dependencies {
     compile 'com.twitter:hbc-core:2.2.0'
     compile 'io.mantisrx:mantis-runtime:1.2.+'
@@ -16,5 +15,3 @@ dependencies {
 
     compileOnly "org.projectlombok:lombok:1.16.16"
 }
-
-
