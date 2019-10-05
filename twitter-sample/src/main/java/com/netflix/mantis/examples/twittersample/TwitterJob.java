@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.samples;
+package com.netflix.mantis.examples.twittersample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,9 @@ import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 import com.mantisrx.common.utils.JsonUtility;
+import com.netflix.mantis.examples.twittersample.config.StageConfigs;
+import com.netflix.mantis.examples.twittersample.core.WordCountPair;
+import com.netflix.mantis.examples.twittersample.sources.TwitterSource;
 import io.mantisrx.runtime.Job;
 import io.mantisrx.runtime.MantisJob;
 import io.mantisrx.runtime.MantisJobProvider;
@@ -29,6 +32,7 @@ import io.mantisrx.runtime.Metadata;
 import io.mantisrx.runtime.executor.LocalJobExecutorNetworked;
 import io.mantisrx.runtime.parameter.Parameter;
 import io.mantisrx.runtime.sink.Sinks;
+import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 
 
@@ -39,7 +43,11 @@ import rx.Observable;
  * E.g
  * <code> Serving modern HTTP SSE server sink on port: 8650 </code>
  * You can curl this port <code> curl localhost:8650</code> to view the output of the job.
+ *
+ * To run via gradle
+ * ../gradlew execute --args='consumerKey consumerSecret token tokensecret'
  */
+@Slf4j
 public class TwitterJob extends MantisJobProvider<String> {
 
     @Override
@@ -67,7 +75,7 @@ public class TwitterJob extends MantisJobProvider<String> {
                                 .flatMap((groupO) -> groupO.reduce(0, (cnt, wordCntPair) -> cnt + 1)
                                         .map((cnt) -> new WordCountPair(groupO.getKey(), cnt))))
                                 .map(WordCountPair::toString)
-
+                                .doOnNext((cnt) -> log.info(cnt))
                         , StageConfigs.scalarToScalarConfig())
                 // Reuse built in sink that eagerly subscribes and delivers data over SSE
                 .sink(Sinks.eagerSubscribe(Sinks.sse((String data) -> data)))
@@ -91,13 +99,19 @@ public class TwitterJob extends MantisJobProvider<String> {
 
     public static void main(String[] args) {
 
-
-// TODO Please Set these variables to valid Strings before running the job
-
         String consumerKey = null;
         String consumerSecret = null;
         String token = null;
         String tokenSecret = null;
+        if(args.length != 4) {
+            System.out.println("Usage: java com.netflix.mantis.examples.TwitterJob <consumerKey> <consumerSecret> <token> <tokenSecret");
+            System.exit(0);
+        } else {
+            consumerKey = args[0].trim();
+            consumerSecret = args[1].trim();
+            token = args[2].trim();
+            tokenSecret = args[3].trim();
+        }
 
         LocalJobExecutorNetworked.execute(new TwitterJob().getJobInstance(),
                 new Parameter(TwitterSource.CONSUMER_KEY_PARAM,consumerKey),

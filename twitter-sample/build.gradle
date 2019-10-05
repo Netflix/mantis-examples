@@ -8,7 +8,7 @@ configurations.all {
 
 
 task execute(type:JavaExec) {
-    main = "com.netflix.mantis.samples.TwitterJob"
+    main = "com.netflix.mantis.examples.twittersample.TwitterJob"
     classpath = sourceSets.main.runtimeClasspath
 }
 
