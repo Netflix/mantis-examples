@@ -91,6 +91,7 @@ public class TwitterJob extends MantisJobProvider<String> {
 
     public static void main(String[] args) {
 
+
 // TODO Please Set these variables to valid Strings before running the job
 
         String consumerKey = null;

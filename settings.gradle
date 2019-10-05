@@ -18,7 +18,8 @@ rootProject.name = 'mantis-examples'
 
 [
     'sine-function',
-    'TwitterSample'
+    'TwitterSample',
+    "GroupBySample"
 ].each {
     include "${it}"
     project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')

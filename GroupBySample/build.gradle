@@ -6,14 +6,14 @@ configurations.all {
     }
 }
 
-
 task execute(type:JavaExec) {
-    main = "com.netflix.mantis.samples.TwitterJob"
+    main = "com.netflix.mantis.samples.RequestAggregationJob"
     classpath = sourceSets.main.runtimeClasspath
 }
 
 dependencies {
     compile 'com.twitter:hbc-core:2.2.0'
+    compile 'net.andreinc.mockneat:mockneat:0.3.7'
     compile 'io.mantisrx:mantis-runtime:1.2.+'
 
     compile 'org.slf4j:slf4j-api'

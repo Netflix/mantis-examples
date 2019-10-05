@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-configurations.all {
-    resolutionStrategy {
-        force "com.google.guava:guava:18.0"
-    }
-}
-task execute(type:JavaExec) {
+package com.netflix.mantis.samples.proto;
 
-    main = "io.mantisrx.mantis.examples.sinefunction.SineFunctionJob"
+import java.util.Map;
 
-    classpath = sourceSets.main.runtimeClasspath
-}
-dependencies {
-    compile 'io.mantisrx:mantis-runtime:1.2.+'
+import lombok.Data;
+
+
+/**
+ * A simple POJO which holds the result of aggregating counts per request path.
+ */
+@Data
+public class AggregationReport {
+    private final Map<String, Integer> pathToCountMap;
 }
