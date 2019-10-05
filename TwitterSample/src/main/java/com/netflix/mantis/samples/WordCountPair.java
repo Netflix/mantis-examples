@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = 'mantis-examples'
+package com.netflix.mantis.samples;
 
-[
-    'sine-function',
-    'TwitterSample'
-].each {
-    include "${it}"
-    project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')
+import lombok.Data;
+
+
+/**
+ * A simple class that holds a word and a count of how many times it has occurred.
+ */
+@Data
+public class WordCountPair {
+    private final String word;
+    private final int count;
 }
