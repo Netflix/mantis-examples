@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.samples;
+package com.netflix.mantis.examples.twittersample.core;
 
 import lombok.Data;
 
@@ -24,6 +24,7 @@ import lombok.Data;
  */
 @Data
 public class WordCountPair {
+
     private final String word;
     private final int count;
 }
