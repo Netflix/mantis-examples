@@ -19,3 +19,7 @@ by URI and then calculates counts per URI over a rolling window.
 ## synthetic-sourcejob
 A sample source job that serves a stream of request event data and allows the consumers
 to query against it using the MQL language.
+
+## jobconnector-sample
+A simple example that demonstrates how to pipe the output of another job
+into your job.

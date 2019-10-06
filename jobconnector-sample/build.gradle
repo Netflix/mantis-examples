@@ -1,0 +1,29 @@
+apply plugin: 'java'
+
+configurations.all {
+    resolutionStrategy {
+        force "com.google.guava:guava:18.0"
+
+    }
+}
+
+task execute(type:JavaExec) {
+    main = "com.netflix.mantis.samples.JobConnectorJob"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+ext {
+    mantisVersion = '1.2.+'
+    mantisConnectorsVersion = '1.2.5'
+
+}
+
+dependencies {
+    implementation "io.mantisrx:mantis-runtime:$mantisVersion"
+    implementation "io.mantisrx:mantis-connector-job:$mantisConnectorsVersion"
+
+    compileOnly "org.projectlombok:lombok:1.16.16"
+
+}
+
+
