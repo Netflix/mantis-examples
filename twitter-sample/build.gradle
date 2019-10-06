@@ -3,6 +3,7 @@ apply plugin: 'java'
 configurations.all {
     resolutionStrategy {
         force "com.google.guava:guava:18.0"
+        force "org.apache.httpcomponents:httpclient:4.5.9"
     }
 }
 

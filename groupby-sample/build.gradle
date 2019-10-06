@@ -3,6 +3,7 @@ apply plugin: 'java'
 configurations.all {
     resolutionStrategy {
         force "com.google.guava:guava:18.0"
+
     }
 }
 
@@ -12,7 +13,7 @@ task execute(type:JavaExec) {
 }
 
 dependencies {
-    compile 'com.twitter:hbc-core:2.2.0'
+
     compile 'net.andreinc.mockneat:mockneat:0.3.7'
     compile 'io.mantisrx:mantis-runtime:1.2.+'
 
