@@ -20,6 +20,14 @@ ext {
     mockNeatVersion = '0.3.7'
 }
 
+task execute(type:JavaExec) {
+
+    main = "io.mantisrx.sourcejob.synthetic.SyntheticSourceJob"
+
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+
 dependencies {
     implementation "io.mantisrx:mantis-runtime:$mantisVersion"
     implementation "io.mantisrx:mql-jvm:$mqlVersion"
