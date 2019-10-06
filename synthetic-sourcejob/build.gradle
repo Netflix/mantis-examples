@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-rootProject.name = 'mantis-examples'
+ext {
+    mantisVersion = '1.2.+'
+    mqlVersion = '3.2.2'
+    mockNeatVersion = '0.3.7'
+}
 
-[
-    'sine-function',
-    'twitter-sample',
-    'groupby-sample',
-    'synthetic-sourcejob'
-].each {
-    include "${it}"
-    project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')
+dependencies {
+    implementation "io.mantisrx:mantis-runtime:$mantisVersion"
+    implementation "io.mantisrx:mql-jvm:$mqlVersion"
+
+    implementation "net.andreinc.mockneat:mockneat:$mockNeatVersion"
+
+    compileOnly "org.projectlombok:lombok:1.16.16"
+
+    testCompile 'junit:junit'
+    testCompile "org.mockito:mockito-all:1.9.5"
+    // update kafka-unit version for kafka 2.2.+ once this PR is released https://github.com/chbatey/kafka-unit/pull/69
+    testCompile 'info.batey.kafka:kafka-unit:1.0'
 }

@@ -15,3 +15,7 @@ Processes a twitter stream and performs a word count over a hopping window
 ## groupby-sample
 A multi-stage job that generates synthetic request event data, groups the data
 by URI and then calculates counts per URI over a rolling window.
+
+## synthetic-sourcejob
+A sample source job that serves a stream of request event data and allows the consumers
+to query against it using the MQL language.
