@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = 'mantis-examples'
+package com.netflix.mantis.examples.mantispublishsample;
 
-[
-    'sine-function',
-    'twitter-sample',
-    'groupby-sample',
-    'synthetic-sourcejob',
-    'jobconnector-sample',
-    'mantis-publish-sample'
-].each {
-    include "${it}"
-    project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')
+import com.google.inject.AbstractModule;
+
+
+public class BasicModule extends AbstractModule {
+
+    @Override
+    protected void configure() {
+        bind(IDataPublisher.class).to(SampleDataPublisher.class);
+        bind(IDataGenerator.class).to(DataGenerator.class);
+    }
 }

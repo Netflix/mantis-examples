@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = 'mantis-examples'
+package com.netflix.mantis.examples.mantispublishsample;
 
-[
-    'sine-function',
-    'twitter-sample',
-    'groupby-sample',
-    'synthetic-sourcejob',
-    'jobconnector-sample',
-    'mantis-publish-sample'
-].each {
-    include "${it}"
-    project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')
+import com.netflix.mantis.examples.mantispublishsample.proto.RequestEvent;
+import rx.Observable;
+
+
+/**
+ * A data generator that generates a stream of {@link RequestEvent} at a fixed interval.
+ */
+public interface IDataGenerator {
+
+    Observable<RequestEvent> generateEvents();
 }
