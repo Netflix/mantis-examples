@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-rootProject.name = 'mantis-examples'
+package com.netflix.mantis.examples.mantispublishsample.web.service;
 
-[
-    'sine-function',
-    'twitter-sample',
-    'groupby-sample',
-    'synthetic-sourcejob',
-    'jobconnector-sample',
-    'mantis-publish-sample',
-    'mantis-publish-web-sample'
-].each {
-    include "${it}"
-    project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')
+public interface MyService {
+    String hello(String name);
 }

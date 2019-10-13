@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
-repositories {
-    maven {
-        url "https://dl.bintray.com/netflixoss/maven"
-    }
-}
-
-if (project.hasProperty('useMavenLocal')) {
-    repositories {
-        mavenLocal()
-    }
-}
 
 buildscript {
     repositories {
         jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+        maven {
+            url "https://dl.bintray.com/netflixoss/maven"
+        }
     }
 }
-application {
-    mainClassName = 'com.netflix.mantis.examples.mantispublishsample.Application'
+
+plugins {
+    id 'war'
+    id 'org.gretty' version '2.2.0'
 }
+
 
 ext {
 
@@ -49,19 +38,22 @@ ext {
     mockNeatVersion = '0.3.7'
     slf4jVersion = '1.7.28'
     lombokVersion = '1.16.16'
+    guiceServletVersion = '4.0'
 }
 
 
 dependencies {
+
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'io.mantisrx:mantis-publish-netty-guice:1.2.16'
     implementation "com.netflix.spectator:spectator-ext-ipc:$spectatorVersion"
     implementation "com.netflix.archaius:archaius2-core:$archaiusVersion"
     implementation "com.netflix.archaius:archaius2-guice:$archaiusVersion"
     implementation "com.google.inject:guice:$guiceVersion"
     implementation "com.netflix.spectator:spectator-nflx-plugin:$spectatorVersion"
-    implementation "net.andreinc.mockneat:mockneat:$mockNeatVersion"
-
     implementation "org.slf4j:slf4j-log4j12:$slf4jVersion"
+
+    compile 'com.google.inject.extensions:guice-servlet:4.0'
     compileOnly "org.projectlombok:lombok:$lombokVersion"
 }
 
