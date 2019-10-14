@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-configurations.all {
-    resolutionStrategy {
-        force "com.google.guava:guava:18.0"
-    }
-}
-task execute(type:JavaExec) {
+package com.netflix.mantis.examples.mantispublishsample;
 
-    main = "io.mantisrx.mantis.examples.sinefunction.SineFunctionJob"
+import com.netflix.mantis.examples.mantispublishsample.proto.RequestEvent;
+import rx.Observable;
 
-    classpath = sourceSets.main.runtimeClasspath
-}
-dependencies {
-    compile 'io.mantisrx:mantis-runtime:1.2.+'
 
+/**
+ * A data generator that generates a stream of {@link RequestEvent} at a fixed interval.
+ */
+public interface IDataGenerator {
+
+    Observable<RequestEvent> generateEvents();
 }

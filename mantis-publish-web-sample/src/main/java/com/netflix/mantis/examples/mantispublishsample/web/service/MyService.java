@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-configurations.all {
-    resolutionStrategy {
-        force "com.google.guava:guava:18.0"
-    }
-}
-task execute(type:JavaExec) {
+package com.netflix.mantis.examples.mantispublishsample.web.service;
 
-    main = "io.mantisrx.mantis.examples.sinefunction.SineFunctionJob"
-
-    classpath = sourceSets.main.runtimeClasspath
-}
-dependencies {
-    compile 'io.mantisrx:mantis-runtime:1.2.+'
-
+public interface MyService {
+    String hello(String name);
 }

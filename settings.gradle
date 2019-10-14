@@ -21,7 +21,9 @@ rootProject.name = 'mantis-examples'
     'twitter-sample',
     'groupby-sample',
     'synthetic-sourcejob',
-    'jobconnector-sample'
+    'jobconnector-sample',
+    'mantis-publish-sample',
+    'mantis-publish-web-sample'
 ].each {
     include "${it}"
     project(":${it}").name = "${rootProject.name}-${it}".replace('/', '-')

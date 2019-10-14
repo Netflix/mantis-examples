@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-configurations.all {
-    resolutionStrategy {
-        force "com.google.guava:guava:18.0"
+package com.netflix.mantis.examples.mantispublishsample;
+
+import com.google.inject.AbstractModule;
+
+
+public class BasicModule extends AbstractModule {
+
+    @Override
+    protected void configure() {
+        bind(IDataPublisher.class).to(SampleDataPublisher.class);
+        bind(IDataGenerator.class).to(DataGenerator.class);
     }
-}
-task execute(type:JavaExec) {
-
-    main = "io.mantisrx.mantis.examples.sinefunction.SineFunctionJob"
-
-    classpath = sourceSets.main.runtimeClasspath
-}
-dependencies {
-    compile 'io.mantisrx:mantis-runtime:1.2.+'
-
 }

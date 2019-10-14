@@ -23,3 +23,6 @@ to query against it using the MQL language.
 ## jobconnector-sample
 A simple example that demonstrates how to pipe the output of another job
 into your job.
+
+## mantis-publish-sample
+An example of using the mantis-publish library to send events to Mantis.

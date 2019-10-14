@@ -15,13 +15,14 @@ task execute(type:JavaExec) {
 ext {
     mantisVersion = '1.2.+'
     mantisConnectorsVersion = '1.2.5'
+    slf4jVersion = '1.7.28'
 
 }
 
 dependencies {
     implementation "io.mantisrx:mantis-runtime:$mantisVersion"
     implementation "io.mantisrx:mantis-connector-job:$mantisConnectorsVersion"
-
+    implementation "org.slf4j:slf4j-log4j12:$slf4jVersion"
     compileOnly "org.projectlombok:lombok:1.16.16"
 
 }
