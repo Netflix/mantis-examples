@@ -28,7 +28,7 @@ import rx.Observable;
  * made by an end user to this service.
  */
 public class DataGenerator implements IDataGenerator {
-    private final int rateMs = 250;
+    private final int rateMs = 1000;
     private final MockNeat mockDataGenerator = MockNeat.threadLocal();
 
     @Override
