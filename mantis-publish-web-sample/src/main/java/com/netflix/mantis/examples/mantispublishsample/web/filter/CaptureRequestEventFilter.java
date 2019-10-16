@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import io.mantisrx.publish.api.Event;
 import io.mantisrx.publish.api.EventPublisher;
+import io.mantisrx.publish.api.PublishStatus;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -98,8 +100,11 @@ public class CaptureRequestEventFilter implements Filter {
             Event rEvent = new Event(event);
             final long duration = System.currentTimeMillis() - startMillis;
             rEvent.set("duration", duration);
-            log.info("sending event {}", rEvent);
-            publisher.publish(rEvent);
+            log.info("sending event {} to stream {}", rEvent);
+            CompletionStage<PublishStatus> sendResult = publisher.publish(rEvent);
+            sendResult.whenCompleteAsync((status,throwable) -> {
+                log.info("Filter send event status=> {}", status);
+            });
         } catch (Exception e) {
             log.error("failed to process event", e);
         }
