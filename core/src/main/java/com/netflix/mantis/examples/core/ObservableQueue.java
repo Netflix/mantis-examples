@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.examples.twittersample.core;
+package com.netflix.mantis.examples.core;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.examples.twittersample;
+package com.netflix.mantis.examples.wordcount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 import com.mantisrx.common.utils.JsonUtility;
-import com.netflix.mantis.examples.twittersample.config.StageConfigs;
-import com.netflix.mantis.examples.twittersample.core.WordCountPair;
-import com.netflix.mantis.examples.twittersample.sources.TwitterSource;
+import com.netflix.mantis.examples.config.StageConfigs;
+import com.netflix.mantis.examples.core.WordCountPair;
+import com.netflix.mantis.examples.wordcount.sources.TwitterSource;
 import io.mantisrx.runtime.Job;
 import io.mantisrx.runtime.MantisJob;
 import io.mantisrx.runtime.MantisJobProvider;

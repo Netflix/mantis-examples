@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+configurations.all {
+    resolutionStrategy {
+        force "com.google.guava:guava:18.0"
+        force "org.apache.httpcomponents:httpclient:4.5.9"
+    }
+}
+
+
+task execute(type:JavaExec) {
+    main = "com.netflix.mantis.examples.wordcount.WordCountJob"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+dependencies {
+    compile project(':mantis-examples-core')
+    compile 'com.twitter:hbc-core:2.2.0'
+    compile 'io.mantisrx:mantis-runtime:1.2.+'
+
+    compile 'org.slf4j:slf4j-api'
+    compile 'org.slf4j:slf4j-log4j12'
+
+    compileOnly "org.projectlombok:lombok:1.16.16"
+}
+
+

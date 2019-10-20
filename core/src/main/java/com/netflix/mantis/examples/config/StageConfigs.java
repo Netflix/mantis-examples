@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.examples.twittersample.config;
+package com.netflix.mantis.examples.config;
 
 import java.util.Map;
 

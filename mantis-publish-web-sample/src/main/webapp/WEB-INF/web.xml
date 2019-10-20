@@ -6,7 +6,7 @@
     <!-- taken from https://github.com/google/guice/wiki/Servlets -->
 
     <listener>
-        <listener-class>com.netflix.mantis.examples.mantispublishsample.web.config.DefaultGuiceServletConfig</listener-class>
+        <listener-class>com.netflix.mantis.examples.mantispublishsample.web.com.netflix.mantis.examples.config.DefaultGuiceServletConfig</listener-class>
     </listener>
 
     <filter>

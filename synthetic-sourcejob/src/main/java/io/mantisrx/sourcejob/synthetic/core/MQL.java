@@ -48,25 +48,25 @@ public class MQL {
     // Clojure Interop
     //
 
-    private static IFn require = Clojure.var("io.mantisrx.mql.shaded.clojure.core", "require");
+    private static IFn require = Clojure.var("io.mantisrx.mql.shaded.clojure.com.netflix.mantis.examples.core", "require");
 
     static {
-        require.invoke(Clojure.read("io.mantisrx.mql.jvm.interfaces.core"));
+        require.invoke(Clojure.read("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core"));
         require.invoke(Clojure.read("io.mantisrx.mql.jvm.interfaces.server"));
     }
 
     private static IFn cljMakeQuery = Clojure.var("io.mantisrx.mql.jvm.interfaces.server", "make-query");
-    private static IFn cljSuperset = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "queries->superset-projection");
-    private static IFn parser = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "parser");
-    private static IFn parses = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "parses?");
-    private static IFn getParseError = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "get-parse-error");
-    private static IFn queryToGroupByFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->groupby");
-    private static IFn queryToHavingPred = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->having-pred");
-    private static IFn queryToOrderBy = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->orderby");
-    private static IFn queryToLimit = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->limit");
-    private static IFn queryToExtrapolationFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->extrapolator");
-    private static IFn queryToAggregateFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "agg-query->projection");
-    private static IFn queryToWindow = Clojure.var("io.mantisrx.mql.jvm.interfaces.core", "query->window");
+    private static IFn cljSuperset = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "queries->superset-projection");
+    private static IFn parser = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "parser");
+    private static IFn parses = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "parses?");
+    private static IFn getParseError = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "get-parse-error");
+    private static IFn queryToGroupByFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "query->groupby");
+    private static IFn queryToHavingPred = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "query->having-pred");
+    private static IFn queryToOrderBy = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "query->orderby");
+    private static IFn queryToLimit = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "query->limit");
+    private static IFn queryToExtrapolationFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "query->extrapolator");
+    private static IFn queryToAggregateFn = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "agg-query->projection");
+    private static IFn queryToWindow = Clojure.var("io.mantisrx.mql.jvm.interfaces.com.netflix.mantis.examples.core", "query->window");
 
 
     private static Logger logger = LoggerFactory.getLogger(MQL.class);

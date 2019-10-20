@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.netflix.mantis.examples.twittersample.sources;
+package com.netflix.mantis.examples.wordcount.sources;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.netflix.mantis.examples.twittersample.core.ObservableQueue;
+import com.netflix.mantis.examples.core.ObservableQueue;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;

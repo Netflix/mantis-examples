@@ -86,7 +86,7 @@ public class SineFunctionJob extends MantisJobProvider<Point> {
             .build();
 
     /**
-     * The Stage config defines how the output of the stage is serialized onto the next stage or sink.
+     * The Stage com.netflix.mantis.examples.config defines how the output of the stage is serialized onto the next stage or sink.
      */
     static ScalarToScalar.Config<Integer, Point> stageConfig() {
         return new ScalarToScalar.Config<Integer, Point>()
