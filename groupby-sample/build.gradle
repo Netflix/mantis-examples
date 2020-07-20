@@ -16,6 +16,8 @@ dependencies {
 
     compile 'net.andreinc.mockneat:mockneat:0.3.7'
     compile 'io.mantisrx:mantis-runtime:1.2.+'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.11.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 
     compile 'org.slf4j:slf4j-api'
     compile 'org.slf4j:slf4j-log4j12'

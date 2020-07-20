@@ -32,6 +32,8 @@ task execute(type:JavaExec) {
 dependencies {
     implementation "io.mantisrx:mantis-runtime:$mantisVersion"
     implementation "io.mantisrx:mql-jvm:$mqlVersion"
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 
     implementation "net.andreinc.mockneat:mockneat:$mockNeatVersion"
     implementation "org.slf4j:slf4j-log4j12:$slf4jVersion"

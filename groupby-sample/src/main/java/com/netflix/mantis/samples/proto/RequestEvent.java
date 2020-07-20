@@ -1,4 +1,3 @@
-package com.netflix.mantis.samples.proto;
 /*
  * Copyright 2019 Netflix, Inc.
  *
@@ -14,12 +13,13 @@ package com.netflix.mantis.samples.proto;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.netflix.mantis.samples.proto;
 
 import java.io.IOException;
 
+import io.mantisrx.common.codec.Codec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import io.mantisrx.common.codec.Codec;
 import lombok.Builder;
 import lombok.Data;
 
